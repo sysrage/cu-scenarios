@@ -1,0 +1,34 @@
+.ServerTable-container {
+  overflow-x: auto; /* Needed for table to be responsive */
+}
+
+.ServerTable {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.ServerTable-head {
+  background-color: #0c2033;
+}
+
+.ServerTable-head tr th {
+  padding: 10px 20px;
+  color: #9cb3c9;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.ServerTable-body {
+  text-align: center;
+  background-color: #0f273d;
+}
+
+.ServerTable-body tr td {
+  padding: 24px 20px;
+  border-bottom: 2px solid #0c2033;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
