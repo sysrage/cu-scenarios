@@ -9,7 +9,7 @@ import PlayerCounts from './PlayerCounts';
 
 const OnlineStatus = styled('span')`
   padding-right: 4px;
-  color: ${props => props.status === 'Offline' ? '#FF8080' : '#92E989'};
+  color: ${props => props.status === 'Online' && props.playerMax > 0 ? '#92E989' : '#FF8080'};
 `;
 
 const ServerTable = (props) => {
@@ -21,7 +21,6 @@ const ServerTable = (props) => {
           <tr>
             <th>Server</th>
             <th style={{width: "30%"}}>Access Level</th>
-            {/* <th>Max Players</th> */}
             <th>Players</th>
           </tr>
         </thead>
@@ -44,14 +43,11 @@ const ServerTable = (props) => {
               // onClick={() => history.push(`/${server.name}`)}
             >
               <td>
-                <OnlineStatus status={server.status}><i className="fa fa-power-off"></i></OnlineStatus> {server.name}
+                <OnlineStatus status={server.status} playerMax={server.playerMaximum}><i className="fa fa-power-off"></i></OnlineStatus> {server.name}
               </td>
               <td>
                 {server.accessLevel}
               </td>
-              {/* <td>
-                {server.playerMaximum}
-              </td> */}
               <td>
                 <PlayerCounts server={server.name} />
               </td>
