@@ -30,17 +30,7 @@ class ServerList extends React.Component {
     }
   }`;
 
-  componentWillMount() {
-
-  }
-
-  componentDidMount() {
-    this.setState({ loading: true });
-    this.fetchServers();
-
-    setInterval(() => {this.fetchServers()}, 2000);
-  }
-
+  fetchTimer = {};
   fetchServers() {
     gql(this.queryServerList)
     .then((data) => {
@@ -67,6 +57,20 @@ class ServerList extends React.Component {
         loading: false
       });
     });
+  }
+
+  componentWillMount() {
+
+  }
+
+  componentDidMount() {
+    this.setState({ loading: true });
+    this.fetchServers();
+    this.fetchTimer = setInterval(() => {this.fetchServers()}, 2000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.fetchTimer);
   }
 
   render() {

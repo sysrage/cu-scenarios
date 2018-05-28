@@ -150,16 +150,7 @@ class ScenarioList extends React.Component {
   //   }`
   // }
 
-  componentWillMount() {
-
-  }
-
-  componentDidMount() {
-    this.setState({ loading: true });
-    this.fetchScenarios();
-    // setInterval(() => {this.fetchScenarios()}, 2000);
-  }
-
+  fetchTimer = {};
   fetchScenarios() {
     const shardId = this.props.match.params.shardId;
     const curDate = new Date();
@@ -170,7 +161,7 @@ class ScenarioList extends React.Component {
     .then((data) => {
       const { scenarioSummaries } = data.shardprogression;
 
-      console.log('data - ' + this.props.match.params.shardId, data.shardprogression.scenarioSummaries);
+      // console.log('data - ' + this.props.match.params.shardId, data.shardprogression.scenarioSummaries);
 
       const finishedScenarios = [];
       const otherScenarios = [];
@@ -194,6 +185,20 @@ class ScenarioList extends React.Component {
         loading: false
       });
     });
+  }
+
+  componentWillMount() {
+
+  }
+
+  componentDidMount() {
+    this.setState({ loading: true });
+    this.fetchScenarios();
+    // this.fetchTimer = setInterval(() => {this.fetchScenarios()}, 2000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.fetchTimer);
   }
 
   render() {

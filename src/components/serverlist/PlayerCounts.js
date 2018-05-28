@@ -34,6 +34,7 @@ class PlayerCounts extends React.Component {
     `
   }
 
+  fetchTimer = {};
   fetchPlayers() {
     const { server } = this.props;
 
@@ -63,7 +64,11 @@ class PlayerCounts extends React.Component {
 
   componentDidMount() {
     this.fetchPlayers();
-    setInterval(() => {this.fetchPlayers()}, 3000);
+    this.fetchTimer = setInterval(() => {this.fetchPlayers()}, 3000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.fetchTimer);
   }
 
   render() {

@@ -5,6 +5,7 @@ import Header from './components/common/Header';
 import ServerList from './components/serverlist/ServerList';
 import NotFound from './components/notfound/NotFound';
 import ScenarioList from './components/scenariolist/ScenarioList';
+import ScenarioDetail from './components/scenariodetail/ScenarioDetail';
 import Detail from './components/detail/Detail';
 import './index.css';
 
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/" component={ServerList} exact />
           <Route path="/:serverName" component={Detail} exact />
           <Route path="/shard/:shardId" component={ScenarioList} exact />
+          <Route path="/scenario/:scenarioId" component={ScenarioDetail} exact />
           <Route component={NotFound} />
       </Switch>
       </div>
