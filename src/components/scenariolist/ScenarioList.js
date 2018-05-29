@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { gql, gqlws } from '../../helpers';
 import Loading from '../common/Loading';
 import TableFinished from './TableFinished';
@@ -42,126 +43,15 @@ class ScenarioList extends React.Component {
     }`
   }
 
-  // queryScenarios(startDate, endDate) {
-  //   return `{
-  //     shardprogression {
-  //       scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}") {
-  //         scenarioInstanceID
-  //         startTime
-  //         endTime
-  //         resolution
-  //         scenarioDef {
-  //           displayName
-  //           displayDescription
-  //           icon
-  //         }
-  //         teamOutcomes {
-  //           teamID
-  //           outcome
-  //           participants {
-  //             displayName
-  //             score
-  //             damage {
-  //               healingApplied {
-  //                 anyCharacter
-  //                 self
-  //                 playerCharacter
-  //                 nonPlayerCharacter
-  //                 dummy
-  //                 resourceNode
-  //                 item
-  //                 building
-  //               }
-  //               healingReceived {
-  //                 anyCharacter
-  //                 self
-  //                 playerCharacter
-  //                 nonPlayerCharacter
-  //                 dummy
-  //                 resourceNode
-  //                 item
-  //                 building
-  //               }
-  //               damageApplied {
-  //                 anyCharacter
-  //                 self
-  //                 playerCharacter
-  //                 nonPlayerCharacter
-  //                 dummy
-  //                 resourceNode
-  //                 item
-  //                 building
-  //               }
-  //               damageReceived {
-  //                 anyCharacter
-  //                 self
-  //                 playerCharacter
-  //                 nonPlayerCharacter
-  //                 dummy
-  //                 resourceNode
-  //                 item
-  //                 building
-  //               }
-  //               killCount {
-  //                 anyCharacter
-  //                 self
-  //                 playerCharacter
-  //                 nonPlayerCharacter
-  //                 dummy
-  //                 resourceNode
-  //                 item
-  //                 building
-  //               }
-  //               deathCount {
-  //                 anyCharacter
-  //                 self
-  //                 playerCharacter
-  //                 nonPlayerCharacter
-  //                 dummy
-  //                 resourceNode
-  //                 item
-  //                 building
-  //               }
-  //               killAssistCount {
-  //                 anyCharacter
-  //                 self
-  //                 playerCharacter
-  //                 nonPlayerCharacter
-  //                 dummy
-  //                 resourceNode
-  //                 item
-  //                 building
-  //               }
-  //               createCount {
-  //                 anyCharacter
-  //                 self
-  //                 playerCharacter
-  //                 nonPlayerCharacter
-  //                 dummy
-  //                 resourceNode
-  //                 item
-  //                 building
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }`
-  // }
-
   fetchTimer = {};
   fetchScenarios() {
     const shardId = this.props.match.params.shardId;
-    const curDate = new Date();
-    const currentDate = (curDate.getUTCMonth() + 1) + "/" + curDate.getUTCDate() + "/" + curDate.getUTCFullYear();
-    const startDate = curDate.getUTCMonth() + "/" + curDate.getUTCDate() + "/" + curDate.getUTCFullYear();
+    const startDate = moment().subtract(1, 'months').format('M/D/YYYY');
+    const endDate = moment().add(1, 'days').format('M/D/YYYY');
 
-    gqlws(shardId, this.queryScenarios(startDate, currentDate))
+    gqlws(shardId, this.queryScenarios(startDate, endDate))
     .then((data) => {
       const { scenarioSummaries } = data.shardprogression;
-
-      // console.log('data - ' + this.props.match.params.shardId, data.shardprogression.scenarioSummaries);
 
       const finishedScenarios = [];
       const otherScenarios = [];
