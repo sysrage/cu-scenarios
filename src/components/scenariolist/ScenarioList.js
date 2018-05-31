@@ -63,8 +63,8 @@ class ScenarioList extends React.Component {
   fetchTimer = {};
   fetchScenarios() {
     const serverAPI = this.state.apiHost;
-    const startDate = moment().subtract(1, 'months').format('M/D/YYYY');
-    const endDate = moment().add(1, 'days').format('M/D/YYYY');
+    const startDate = moment().subtract(1, 'weeks').format();
+    const endDate = moment().format();
 
     gql(this.query(startDate, endDate), undefined, serverAPI)
     .then((data) => {
@@ -111,6 +111,7 @@ class ScenarioList extends React.Component {
               error: 'API Server is offline',
               loading: false
             });
+            break;
           }
 
           this.setState({
@@ -119,6 +120,7 @@ class ScenarioList extends React.Component {
 
           this.fetchScenarios();
           // this.fetchTimer = setInterval(() => {this.fetchScenarios()}, 2000);
+          break;
         }
       }
     })
@@ -135,7 +137,7 @@ class ScenarioList extends React.Component {
   }
 
   render() {
-    const { loading, error, finishedScenarios, otherScenarios } = this.state;
+    const { loading, error, apiHost, finishedScenarios, otherScenarios } = this.state;
 
     if (loading) {
       return <div className="loading-container"><Loading /></div>
