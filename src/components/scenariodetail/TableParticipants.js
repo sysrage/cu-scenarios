@@ -2,7 +2,6 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from 'react-emotion';
-import moment from 'moment';
 
 import 'font-awesome/css/font-awesome.min.css';
 

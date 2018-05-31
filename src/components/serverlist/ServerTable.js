@@ -28,7 +28,7 @@ const ServerTable = (props) => {
           {servers.map((server) => (
             <tr
               key={server.name.toLowerCase()}
-              onClick={() => history.push(`/shard/${server.shardID}`)}
+              onClick={() => history.push(`/scenarios/${server.name}`)}
               // onClick={() => {
               //   history.push(`/shard/${server.shardID}`);
               //   ((s,m)=>{
@@ -43,7 +43,7 @@ const ServerTable = (props) => {
               // onClick={() => history.push(`/${server.name}`)}
             >
               <td>
-                <OnlineStatus status={server.status} playerMax={server.playerMaximum}><i className="fa fa-power-off"></i></OnlineStatus> {server.name}
+                <OnlineStatus status={server.playerMaximum < 1 ? 'Offline' : server.status} playerMax={server.playerMaximum}><i className="fa fa-power-off"></i></OnlineStatus> {server.name}
               </td>
               <td>
                 {server.accessLevel}

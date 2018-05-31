@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import styled from 'react-emotion';
 import moment from 'moment';
 
-import { gql, gqlws } from '../../helpers';
+import { gql } from '../../helpers';
 import Loading from '../common/Loading';
 import TableParticipants from './TableParticipants';
 
@@ -107,7 +107,7 @@ class ScenarioDetail extends React.Component {
     };
   }
 
-  queryScenario(scenarioId) {
+  query(scenarioId) {
     return `{
       scenariosummary(id: "${scenarioId}") {
         scenarioInstanceID
@@ -217,11 +217,11 @@ class ScenarioDetail extends React.Component {
   fetchScenario() {
     const scenarioId = this.props.match.params.scenarioId;
 
-    gql(this.queryScenario(scenarioId))
+    gql(this.query(scenarioId))
     .then((data) => {
       const { scenariosummary } = data;
 
-      console.log('data - ' + this.props.match.params.scenarioId, scenariosummary);
+      console.log('scenariosummary - ' + this.props.match.params.scenarioId, scenariosummary);
 
       this.setState({
         scenariosummary,

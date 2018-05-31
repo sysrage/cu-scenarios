@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment';
-import { gql, gqlws } from '../../helpers';
+import { gql } from '../../helpers';
 import Loading from '../common/Loading';
 import TableFinished from './TableFinished';
 import TableOther from './TableOther';
@@ -11,13 +11,30 @@ class ScenarioList extends React.Component {
 
     this.state = {
       loading: false,
+      apiHost: null,
       finishedScenarios: [],
       otherScenarios: [],
       error: null,
     };
   }
 
-  queryScenarios(startDate, endDate) {
+  queryServerlist = `{
+    connectedServices {
+      servers {
+        name
+        status
+        accessLevel
+        playerMaximum
+        apiHost
+        host
+        shardID
+        channelID
+        channelPatchPermissions
+      }
+    }
+  }`;
+
+  query(startDate, endDate) {
     return `{
       shardprogression {
         scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}") {
@@ -45,11 +62,11 @@ class ScenarioList extends React.Component {
 
   fetchTimer = {};
   fetchScenarios() {
-    const shardId = this.props.match.params.shardId;
+    const serverAPI = this.state.apiHost;
     const startDate = moment().subtract(1, 'months').format('M/D/YYYY');
     const endDate = moment().add(1, 'days').format('M/D/YYYY');
 
-    gqlws(shardId, this.queryScenarios(startDate, endDate))
+    gql(this.query(startDate, endDate), undefined, serverAPI)
     .then((data) => {
       const { scenarioSummaries } = data.shardprogression;
 
@@ -83,8 +100,34 @@ class ScenarioList extends React.Component {
 
   componentDidMount() {
     this.setState({ loading: true });
-    this.fetchScenarios();
-    // this.fetchTimer = setInterval(() => {this.fetchScenarios()}, 2000);
+
+    gql(this.queryServerlist)
+    .then((data) => {
+      const { servers } = data.connectedServices;
+      for (let i = 0; i < servers.length; i++) {
+        if (servers[i].name === this.props.match.params.serverName) {
+          if (servers[i].status === 'Offline') {
+            this.setState({
+              error: 'API Server is offline',
+              loading: false
+            });
+          }
+
+          this.setState({
+            apiHost: servers[i].apiHost
+          });
+
+          this.fetchScenarios();
+          // this.fetchTimer = setInterval(() => {this.fetchScenarios()}, 2000);
+        }
+      }
+    })
+    .catch((error) => {
+      this.setState({
+        error: error.error,
+        loading: false
+      });
+    });
   }
 
   componentWillUnmount() {

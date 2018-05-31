@@ -14,7 +14,7 @@ class ServerList extends React.Component {
     };
   }
 
-  queryServerList = `{
+  queryServerlist = `{
     connectedServices {
       servers {
         name
@@ -32,7 +32,7 @@ class ServerList extends React.Component {
 
   fetchTimer = {};
   fetchServers() {
-    gql(this.queryServerList)
+    gql(this.queryServerlist)
     .then((data) => {
       const { servers } = data.connectedServices;
 

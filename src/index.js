@@ -17,7 +17,7 @@ const App = () => {
       <Switch>
           <Route path="/" component={ServerList} exact />
           <Route path="/:serverName" component={Detail} exact />
-          <Route path="/shard/:shardId" component={ScenarioList} exact />
+          <Route path="/scenarios/:serverName" component={ScenarioList} exact />
           <Route path="/scenario/:scenarioId" component={ScenarioDetail} exact />
           <Route component={NotFound} />
       </Switch>
