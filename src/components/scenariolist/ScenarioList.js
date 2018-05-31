@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
+
 import { gql } from '../../helpers';
 import Loading from '../common/Loading';
 import TableFinished from './TableFinished';
@@ -63,6 +65,7 @@ class ScenarioList extends React.Component {
   fetchTimer = {};
   fetchScenarios() {
     const serverAPI = this.state.apiHost;
+    if (!serverAPI) return;
     const startDate = moment().subtract(1, 'weeks').format();
     const endDate = moment().format();
 
@@ -88,7 +91,7 @@ class ScenarioList extends React.Component {
     })
     .catch((error) => {
       this.setState({
-        error: error.error,
+        error: error.reason,
         loading: false
       });
     });
@@ -108,10 +111,10 @@ class ScenarioList extends React.Component {
         if (servers[i].name === this.props.match.params.serverName) {
           if (servers[i].status === 'Offline') {
             this.setState({
-              error: 'API Server is offline',
+              error: `API Server (${servers[i].apiHost}) is offline.`,
               loading: false
             });
-            break;
+            return;
           }
 
           this.setState({
@@ -120,13 +123,17 @@ class ScenarioList extends React.Component {
 
           this.fetchScenarios();
           // this.fetchTimer = setInterval(() => {this.fetchScenarios()}, 2000);
-          break;
+          return;
         }
       }
+      this.setState({
+        error: `Server (${this.props.match.params.serverName}) does not exist.`,
+        loading: false
+      });
     })
     .catch((error) => {
       this.setState({
-        error: error.error,
+        error: error.reason,
         loading: false
       });
     });
@@ -137,14 +144,21 @@ class ScenarioList extends React.Component {
   }
 
   render() {
-    const { loading, error, apiHost, finishedScenarios, otherScenarios } = this.state;
+    const { loading, error, finishedScenarios, otherScenarios } = this.state;
 
     if (loading) {
       return <div className="loading-container"><Loading /></div>
     }
 
     if (error) {
-      return <div className="error">{error}</div>
+      return (
+        <div className="NotFound">
+          <div className="NotFound-title">Oops! An error was encountered.</div>
+
+          <div className="NotFound-message">{error}</div>
+          <Link to="/" className="NotFound-link">Go to homepage.</Link>
+        </div>
+      );
     }
 
     return (

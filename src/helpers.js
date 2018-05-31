@@ -25,12 +25,12 @@ export const gql = (query, variables, server = 'https://hatcheryapi.camelotuncha
                   return;
               }
               console.log('gql(): reject status: ' + response.status + ' message: ' + data.Message, 'errors: ', data.errors);
-              reject({ status: response.status, message: data.Message });
+              reject({ reason: `Invalid status (${response.status}).` });
           });
       })
       .catch((reason) => {
           console.error(reason.message);
-          reject({ reason: 'API server unavailable' });
+          reject({ reason: `API Server (${server}) is unavailable` });
       });
   });
 }
@@ -41,8 +41,8 @@ export const gql = (query, variables, server = 'https://hatcheryapi.camelotuncha
  *
  * @param {object} response
  */
-export const handleResponse = (response) => {
-  return response.json().then(json => {
-    return response.ok ? json : Promise.reject(json);
-  });
-}
+// export const handleResponse = (response) => {
+//   return response.json().then(json => {
+//     return response.ok ? json : Promise.reject(json);
+//   });
+// }

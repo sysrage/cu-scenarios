@@ -13,14 +13,14 @@ const App = () => {
   return (
     <BrowserRouter>
       <div>
-      <Header />
-      <Switch>
-          <Route path="/" component={ServerList} exact />
-          <Route path="/:serverName" component={Detail} exact />
-          <Route path="/scenarios/:serverName" component={ScenarioList} exact />
-          <Route path="/scenario/:scenarioId" component={ScenarioDetail} exact />
-          <Route component={NotFound} />
-      </Switch>
+        <Header />
+        <Switch>
+            <Route path="/" component={ServerList} exact />
+            <Route path="/:serverName" component={Detail} exact />
+            <Route path="/scenarios/:serverName" component={ScenarioList} exact />
+            <Route path="/scenario/:scenarioId" component={ScenarioDetail} exact />
+            <Route component={NotFound} />
+        </Switch>
       </div>
      </BrowserRouter>
   );

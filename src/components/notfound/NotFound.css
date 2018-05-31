@@ -1,11 +1,19 @@
 .NotFound {
   width: 100%;
   text-align: center;
-  margin-top: 60px;
+  background-color: #0f273d;
+  border-bottom: 2px solid #0c2033;
+  padding: 40px 0px;
 }
 
 .NotFound-title {
+  font-size: 2em;
   font-weight: 400;
+  color: #9cb3c9;
+  padding: 10px 0px;
+}
+
+.NotFound-message {
   color: #9cb3c9;
 }
 

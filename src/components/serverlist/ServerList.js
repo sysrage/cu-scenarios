@@ -53,7 +53,7 @@ class ServerList extends React.Component {
     })
     .catch((error) => {
       this.setState({
-        error: error.error,
+        error: error.reason,
         loading: false
       });
     });

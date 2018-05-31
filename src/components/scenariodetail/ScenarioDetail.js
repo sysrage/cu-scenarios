@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import styled from 'react-emotion';
 import moment from 'moment';
 
@@ -223,14 +223,21 @@ class ScenarioDetail extends React.Component {
 
       console.log('scenariosummary - ' + this.props.match.params.scenarioId, scenariosummary);
 
-      this.setState({
-        scenariosummary,
-        loading: false
-      });
+      if (!scenariosummary) {
+        this.setState({
+          error: `Scenario (${this.props.match.params.scenarioId}) does not exist.`,
+          loading: false
+        });
+      } else {
+        this.setState({
+          scenariosummary,
+          loading: false
+        });
+      }
     })
     .catch((error) => {
       this.setState({
-        error: error.error,
+        error: error.reason,
         loading: false
       });
     });
@@ -262,7 +269,14 @@ class ScenarioDetail extends React.Component {
     }
 
     if (error) {
-      return <div className="error">{error}</div>
+      return (
+        <div className="NotFound">
+          <div className="NotFound-title">Oops! An error was encountered.</div>
+
+          <div className="NotFound-message">{error}</div>
+          <Link to="/" className="NotFound-link">Go to homepage.</Link>
+        </div>
+      );
     }
 
     return (
