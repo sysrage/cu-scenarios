@@ -109,20 +109,21 @@ class ScenarioList extends React.Component {
       const { servers } = data.connectedServices;
       for (let i = 0; i < servers.length; i++) {
         if (servers[i].name === this.props.match.params.serverName) {
-          if (servers[i].status === 'Offline') {
-            this.setState({
-              error: `API Server (${servers[i].apiHost}) is offline.`,
-              loading: false
-            });
-            return;
-          }
+          // if (servers[i].status === 'Offline') {
+          //   this.setState({
+          //     error: `API Server (${servers[i].apiHost}) is offline.`,
+          //     loading: false
+          //   });
+          //   return;
+          // }
 
           this.setState({
+            error: null,
             apiHost: servers[i].apiHost
           });
 
           this.fetchScenarios();
-          // this.fetchTimer = setInterval(() => {this.fetchScenarios()}, 2000);
+          this.fetchTimer = setInterval(() => {this.fetchScenarios()}, 20000);
           return;
         }
       }
