@@ -48,6 +48,7 @@ class ServerList extends React.Component {
 
       this.setState({
         servers,
+        error: null,
         loading: false,
       });
     })
@@ -80,8 +81,17 @@ class ServerList extends React.Component {
       return <div className="loading-container"><Loading /></div>
     }
 
-    if (error) {
-      return <div className="error">{error}</div>
+    if (servers.length < 1 && error) {
+      return (
+        <div className="NotFound">
+          <div className="NotFound-title">Oops! An error was encountered.</div>
+
+          <div className="NotFound-message">{error}</div>
+        </div>
+      );
+
+
+      // return <div className="error">{error}</div>
     }
 
     return (

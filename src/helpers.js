@@ -13,7 +13,8 @@ export const gql = (query, variables, server = 'https://hatcheryapi.camelotuncha
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     //   'loginToken': 'demo',
-    //   'shardId': '1',
+    //   'characterID': '',
+    //   'shardId': '1',   // required if characterId is defined
   };
   const body = JSON.stringify({ query, variables });
   return new Promise((resolve, reject) => {
@@ -30,7 +31,7 @@ export const gql = (query, variables, server = 'https://hatcheryapi.camelotuncha
       })
       .catch((reason) => {
           console.error(reason.message);
-          reject({ reason: `API Server (${server}) is unavailable` });
+          reject({ reason: `API Server (${server}) is unavailable.` });
       });
   });
 }

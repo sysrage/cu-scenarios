@@ -72,15 +72,18 @@ const getAllParticipants = (outcomes) => {
   const allParticipants = [];
 
   if (outcomes) {
+    let pid = 0;
     outcomes.forEach((team) => {
       team.participants.forEach((participant) => {
         allParticipants.push({
+          id: pid,
           displayName: participant.displayName,
           score: participant.score,
           damage: participant.damage,
           team: team.teamID,
           outcome: team.outcome
         });
+        pid++;
       });
     });
   }
@@ -220,8 +223,6 @@ class ScenarioDetail extends React.Component {
     gql(this.query(scenarioId))
     .then((data) => {
       const { scenariosummary } = data;
-
-      console.log('scenariosummary - ' + this.props.match.params.scenarioId, scenariosummary);
 
       if (!scenariosummary) {
         this.setState({
