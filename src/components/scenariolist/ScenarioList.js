@@ -13,6 +13,7 @@ class ScenarioList extends React.Component {
 
     this.state = {
       loading: false,
+      shardID: null,
       apiHost: null,
       finishedScenarios: [],
       otherScenarios: [],
@@ -36,9 +37,9 @@ class ScenarioList extends React.Component {
     }
   }`;
 
-  query(startDate, endDate) {
+  query(shardID, startDate, endDate) {
     return `{
-      shardprogression {
+      shardprogression(shard: ${shardID}) {
         scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}") {
           scenarioInstanceID
           startTime
@@ -55,6 +56,7 @@ class ScenarioList extends React.Component {
             participants {
               displayName
               score
+              characterType
             }
           }
         }
@@ -62,14 +64,17 @@ class ScenarioList extends React.Component {
     }`
   }
 
+
+
+
   fetchTimer = {};
   fetchScenarios() {
-    const serverAPI = this.state.apiHost;
-    if (!serverAPI) return;
+    const { shardID, apiHost } = this.state;
+    if ( !shardID || !apiHost ) return;
     const startDate = moment().subtract(1, 'weeks').format();
     const endDate = moment().format();
 
-    gql(this.query(startDate, endDate), undefined, serverAPI)
+    gql(this.query(shardID, startDate, endDate), undefined, apiHost)
     .then((data) => {
       const { scenarioSummaries } = data.shardprogression;
 
@@ -119,6 +124,7 @@ class ScenarioList extends React.Component {
 
           this.setState({
             error: null,
+            shardID: servers[i].shardID,
             apiHost: servers[i].apiHost
           });
 

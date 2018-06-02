@@ -58,6 +58,40 @@ const TeamLabel = styled('span')`
   color: ${props => props.faction === 'Arthurian' ? '#FF8080' : props.faction === 'Viking' ? '#6DB9D9' : '#92E989'};
 `;
 
+const RoundTable = styled('table')`
+  margin: 10px 0px;
+  table-layout: fixed;
+  width: 85%;
+  border-collapse: collapse;
+  border-spacing: 0;
+`;
+
+const RoundTableHead = styled('thead')`
+  background-color: #0c2033;
+`;
+
+const RoundTableHeadItem = styled('td')`
+  padding: 6px 20px;
+  color: #9cb3c9;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  width: ${props => props.width ? props.width : '33%'};
+`;
+
+const RoundTableBody = styled('tbody')`
+  text-align: center;
+  background-color: #133656;
+`;
+
+const RoundTableBodyItem = styled('td')`
+  padding: 6px 20px;
+  border-bottom: 1px solid #0c2033;
+  color: #fff;
+  font-size: 10px;
+`;
+
+
 const getVictor = (outcomes) => {
   if (outcomes) {
     for (let i = 0; i < outcomes.length; i++) {
@@ -65,6 +99,48 @@ const getVictor = (outcomes) => {
         <TeamLabel faction={outcomes[i].teamID}>{outcomes[i].teamID}</TeamLabel>
       );
     }
+  }
+}
+
+const getRounds = (rounds) => {
+  if (rounds && rounds.length > 1) {
+
+    const roundRows = [];
+    rounds.forEach((round, rid) => {
+      const roundLength = moment.duration(moment(round.endTime).diff(moment(round.startTime))).as('minutes');
+      let roundPlayers = 0;
+      round.teamOutcomes.forEach((team) => roundPlayers += team.participantCount);
+
+      roundRows.push(
+        <tr key={round.roundInstanceID}>
+          <RoundTableBodyItem>{rid + 1}</RoundTableBodyItem>
+          <RoundTableBodyItem>{roundLength.toFixed()} min</RoundTableBodyItem>
+          <RoundTableBodyItem>{roundPlayers}</RoundTableBodyItem>
+          <RoundTableBodyItem>{getVictor(round.teamOutcomes)}</RoundTableBodyItem>
+        </tr>
+      );
+    });
+
+    return (
+      <div>
+        Number of Rounds: <DetailLabel>{rounds.length}</DetailLabel>
+        <center>
+          <RoundTable>
+            <RoundTableHead>
+              <tr>
+                <RoundTableHeadItem>Round</RoundTableHeadItem>
+                <RoundTableHeadItem>Duration</RoundTableHeadItem>
+                <RoundTableHeadItem>Players</RoundTableHeadItem>
+                <RoundTableHeadItem>Victor</RoundTableHeadItem>
+              </tr>
+            </RoundTableHead>
+            <RoundTableBody>
+              {roundRows}
+            </RoundTableBody>
+          </RoundTable>
+        </center>
+      </div>
+    );
   }
 }
 
@@ -212,6 +288,45 @@ class ScenarioDetail extends React.Component {
             }
           }
         }
+        rounds {
+          roundInstanceID
+          startTime
+          endTime
+          resolution
+          teamOutcomes {
+            teamID
+            score
+            role
+            outcome
+            participantCount
+            participants {
+              displayName
+              score
+            }
+            damageSummary {
+              killCount {
+                self
+                playerCharacter
+                nonPlayerCharacter
+                dummy
+                anyCharacter
+                resourceNode
+                item
+                building
+              }
+              deathCount {
+                self
+                playerCharacter
+                nonPlayerCharacter
+                dummy
+                anyCharacter
+                resourceNode
+                item
+                building
+              }
+            }
+          }
+        }
       }
     }`
   }
@@ -302,6 +417,7 @@ class ScenarioDetail extends React.Component {
             &nbsp;<br />
             Scenario Type: <DetailLabel>{ scenariosummary.scenarioDef ? scenariosummary.scenarioDef.displayName : 'Unknown' } <ScenarioIcon src={ scenariosummary.scenarioDef ? scenariosummary.scenarioDef.icon : null } /></DetailLabel><br />
             Winning Team: { getVictor(scenariosummary.teamOutcomes) }<br />
+            { scenariosummary.rounds ? getRounds(scenariosummary.rounds) : null }
             Total Participants: <DetailLabel>{ allParticipants.length }</DetailLabel><br />
           </ScenarioDetails>
         </ScenarioDetailContainer>
