@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'react-emotion';
 import moment from 'moment';
 
 import { gql } from '../../helpers';
@@ -7,9 +8,48 @@ import Loading from '../common/Loading';
 import TableFinished from './TableFinished';
 import TableOther from './TableOther';
 
+const FilterContainer = styled('div')`
+  background-color: #0f273d;
+`;
+
+const FilterSubContainer = styled('div')`
+  margin: 0 auto;
+  width: 150px;
+  padding: 14px 0px;
+  color: #fff;
+  font-size: 14px;
+`;
+
+const FilterSelectBox = styled('span')`
+display: inline;
+padding: 4px;
+  :after {
+    content: '\f078';
+    font: normal normal normal 12px/1 FontAwesome;
+    transform: rotate(45deg);
+    color: #fff;
+    height: 34px;
+    margin-left: -16px;
+    pointer-events: none;
+  }
+`;
+
+const FilterSelect = styled('select')`
+  appearance: none;
+  background-color: #0f273d;
+  color: #fff;
+  padding: 2px;
+  padding-left: 4px;
+  padding-right: 18px;
+  border-radius: 5px;
+`;
+
 class ScenarioList extends React.Component {
   constructor() {
     super();
+
+    const savedScenarioFilterType = localStorage.getItem('savedScenarioFilterType');
+    const savedScenarioFilterValue = localStorage.getItem('savedScenarioFilterValue');
 
     this.state = {
       loading: false,
@@ -17,6 +57,8 @@ class ScenarioList extends React.Component {
       apiHost: null,
       finishedScenarios: [],
       otherScenarios: [],
+      filterType: savedScenarioFilterType ? savedScenarioFilterType : 'weeks',
+      filterValue: savedScenarioFilterValue ? savedScenarioFilterValue : 2,
       error: null,
     };
   }
@@ -64,14 +106,11 @@ class ScenarioList extends React.Component {
     }`
   }
 
-
-
-
   fetchTimer = {};
   fetchScenarios() {
-    const { shardID, apiHost } = this.state;
+    const { shardID, apiHost, filterType, filterValue } = this.state;
     if ( !shardID || !apiHost ) return;
-    const startDate = moment().subtract(1, 'weeks').format();
+    const startDate = moment().subtract(filterValue, filterType).format();
     const endDate = moment().format();
 
     gql(this.query(shardID, startDate, endDate), undefined, apiHost)
@@ -87,7 +126,6 @@ class ScenarioList extends React.Component {
           otherScenarios.push(scenario);
         }
       });
-
       this.setState({
         finishedScenarios,
         otherScenarios,
@@ -102,8 +140,16 @@ class ScenarioList extends React.Component {
     });
   }
 
-  componentWillMount() {
-
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.filterType !== prevState.filterType ||
+      this.state.filterValue !== prevState.filterValue
+    ) {
+      this.setState({ loading: true });
+      localStorage.setItem('savedScenarioFilterType', this.state.filterType);
+      localStorage.setItem('savedScenarioFilterValue', this.state.filterValue);
+      this.fetchScenarios();
+    }
   }
 
   componentDidMount() {
@@ -150,8 +196,25 @@ class ScenarioList extends React.Component {
     clearInterval(this.fetchTimer);
   }
 
+  handleFilterEvent = (event) => {
+    switch(event.target.name) {
+      case 'filterType':
+        this.setState({filterType: event.target.value});
+        break;
+
+      case 'filterValue':
+        this.setState({filterValue: event.target.value});
+        break;
+
+      default:
+        break;
+    }
+  }
+
   render() {
-    const { loading, error, finishedScenarios, otherScenarios } = this.state;
+    const { loading, error, finishedScenarios, otherScenarios, filterType, filterValue } = this.state;
+    const filterTypes = ['hours', 'days', 'weeks', 'months'];
+    const filterValues = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
 
     if (loading) {
       return <div className="loading-container"><Loading /></div>
@@ -170,6 +233,29 @@ class ScenarioList extends React.Component {
 
     return (
       <div>
+        <FilterContainer>
+          <FilterSubContainer>
+            Age:&nbsp;
+            <FilterSelectBox>
+            <FilterSelect name="filterValue" value={filterValue} onChange={this.handleFilterEvent}>
+              {filterValues.map(function(value) {
+                return (
+                  <option key={'filterValue-' + value} value={value}>{value}</option>
+                );
+              })}
+            </FilterSelect>
+            </FilterSelectBox>
+            <FilterSelectBox>
+            <FilterSelect name="filterType" value={filterType} onChange={this.handleFilterEvent}>
+              {filterTypes.map(function(type) {
+                return (
+                  <option key={'filterType-' + type} value={type}>{type}</option>
+                );
+              })}
+            </FilterSelect>
+            </FilterSelectBox>
+          </FilterSubContainer>
+        </FilterContainer>
         <TableFinished scenarios={finishedScenarios} />
         <TableOther scenarios={otherScenarios} />
       </div>

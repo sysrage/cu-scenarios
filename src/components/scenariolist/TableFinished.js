@@ -67,10 +67,12 @@ const VictorLabel = styled('span')`
 `;
 
 const getVictor = (outcomes) => {
-  for (let i = 0; i < outcomes.length; i++) {
-    if (outcomes[i].outcome === "Win") return (
-      <VictorLabel faction={outcomes[i].teamID.toLowerCase()}>{outcomes[i].teamID}</VictorLabel>
-    );
+  if (outcomes) {
+    for (let i = 0; i < outcomes.length; i++) {
+      if (outcomes[i].outcome === "Win") return (
+        <VictorLabel faction={outcomes[i].teamID.toLowerCase()}>{outcomes[i].teamID}</VictorLabel>
+      );
+    }
   }
 }
 
