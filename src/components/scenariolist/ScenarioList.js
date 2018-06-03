@@ -9,27 +9,34 @@ import TableFinished from './TableFinished';
 import TableOther from './TableOther';
 
 const FilterContainer = styled('div')`
+  @media screen and (-webkit-min-device-pixel-ratio:0) {
+    select,
+    textarea,
+    input {
+      font-size: 16px;
+    }
+  }
   background-color: #0f273d;
 `;
 
 const FilterSubContainer = styled('div')`
   margin: 0 auto;
-  width: 150px;
+  width: 174px;
   padding: 14px 0px;
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
 `;
 
 const FilterSelectBox = styled('span')`
-display: inline;
-padding: 4px;
+  display: inline;
+  padding: 4px;
   :after {
     content: '\f078';
     font: normal normal normal 12px/1 FontAwesome;
     transform: rotate(45deg);
     color: #fff;
     height: 34px;
-    margin-left: -16px;
+    margin-left: -18px;
     pointer-events: none;
   }
 `;
