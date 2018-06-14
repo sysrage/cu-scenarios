@@ -78,7 +78,6 @@ const getVictor = (outcomes) => {
 
 const TableFinished = (props) => {
   const { scenarios, history } = props;
-
   return (
     <ScenarioFinishedContainer>
       <ScenarioTitle>Recently Completed Scenarios:</ScenarioTitle>
@@ -94,7 +93,7 @@ const TableFinished = (props) => {
           {scenarios.map((scenario) => (
             <tr
               key={scenario.scenarioInstanceID}
-              onClick={() => history.push(`/scenario/${scenario.scenarioInstanceID}`)}
+              onClick={() => history.push(`/scenario/${scenario.shardID}/${scenario.scenarioInstanceID}`)}
             >
               <ScenarioTableBodyItem>
                 <ScenarioId>{scenario.scenarioInstanceID}</ScenarioId><br />

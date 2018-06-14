@@ -82,7 +82,7 @@ const TableOther = (props) => {
           {scenarios.map((scenario) => (
             <tr
               key={scenario.scenarioInstanceID}
-              onClick={() => history.push(`/scenario/${scenario.scenarioInstanceID}`)}
+              onClick={() => history.push(`/scenario/${scenario.shardID}/${scenario.scenarioInstanceID}`)}
             >
               <ScenarioTableBodyItem>
                 <ScenarioId>{scenario.scenarioInstanceID}</ScenarioId><br />

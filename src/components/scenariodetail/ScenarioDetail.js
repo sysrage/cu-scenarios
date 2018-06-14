@@ -186,6 +186,16 @@ class ScenarioDetail extends React.Component {
     };
   }
 
+  queryServerlist = `{
+    connectedServices {
+      servers {
+        status
+        apiHost
+        shardID
+      }
+    }
+  }`;
+
   query(scenarioId) {
     return `{
       scenariosummary(id: "${scenarioId}") {
@@ -334,22 +344,43 @@ class ScenarioDetail extends React.Component {
   fetchTimer = {};
   fetchScenario() {
     const scenarioId = this.props.match.params.scenarioId;
+    const shardId = this.props.match.params.shardId;
 
-    gql(this.query(scenarioId))
+    const onlineServers = [];
+
+    gql(this.queryServerlist)
     .then((data) => {
-      const { scenariosummary } = data;
-
-      if (!scenariosummary) {
-        this.setState({
-          error: `Scenario (${this.props.match.params.scenarioId}) does not exist.`,
-          loading: false
-        });
-      } else {
-        this.setState({
-          scenariosummary,
-          loading: false
-        });
+      const { servers } = data.connectedServices;
+      let shardApiServer;
+      for (let i = 0; i < servers.length; i++) {
+        if (servers[i].shardID.toString() === shardId) shardApiServer = servers[i].apiHost;
+        if (servers[i].status === 'Online') onlineServers.push(servers[i].apiHost);
       }
+
+      gql(this.query(scenarioId), undefined, shardApiServer)
+      .then((data) => {
+        const { scenariosummary } = data;
+
+        if (scenariosummary) {
+          this.setState({
+            scenariosummary,
+            loading: false
+          });
+        } else {
+          this.setState({
+            error: `Scenario (${this.props.match.params.scenarioId}) does not exist.`,
+            loading: false
+          });
+        }
+      })
+      .catch((error) => {
+        // if a shard's API server (or default server) doesn't respond, try other online servers
+        this.setState({
+          error: error.reason,
+          loading: false
+        });
+      });
+
     })
     .catch((error) => {
       this.setState({
@@ -357,6 +388,68 @@ class ScenarioDetail extends React.Component {
         loading: false
       });
     });
+
+
+    // let serversChecked = 0;
+    // let serverWasFound = false;
+    // const serverFinished = (isFound = false) => {
+    //   serversChecked++;
+    //   if (isFound) serverWasFound = true;
+    //   if (serversChecked > apiServers.length && !serverWasFound) {
+    //     console.log('showing error', this.state);
+    //     this.setState({
+    //       error: `Scenario (${this.props.match.params.scenarioId}) does not exist.`,
+    //       loading: false
+    //     });
+    //   }
+    // }
+
+    // gql(this.queryServerlist)
+    // .then((data) => {
+    //   const { servers } = data.connectedServices;
+    //   for (let i = 0; i < servers.length; i++) {
+    //     if (servers[i].status === 'Online') {
+    //       apiServers.push(servers[i].apiHost);
+    //     }
+    //   }
+    //   apiServers.push('https://hatcheryapi.camelotunchained.com');
+    //   apiServers.push('https://nuadaapi.camelotunchained.com');
+
+    //   for (let i = 0; i < apiServers.length || (i === 0 && apiServers.length === 0); i++) {
+    //     const apiServer = apiServers[i];
+    //     console.log('server', apiServer);
+    //     gql(this.query(scenarioId), undefined, apiServer)
+    //     .then((data) => {
+    //       const { scenariosummary } = data;
+
+    //       if (scenariosummary) {
+    //         serverFinished(true);
+    //         this.setState({
+    //           scenariosummary,
+    //           loading: false
+    //         });
+    //       } else {
+    //         serverFinished();
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       serverFinished();
+    //       if (!serverWasFound) {
+    //         this.setState({
+    //           error: error.reason,
+    //           loading: false
+    //         });
+    //       }
+    //     });
+    //   }
+    // })
+    // .catch((error) => {
+    //   this.setState({
+    //     error: error.reason,
+    //     loading: false
+    //   });
+    // });
+
   }
 
   componentWillMount() {

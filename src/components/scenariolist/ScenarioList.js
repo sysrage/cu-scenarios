@@ -87,13 +87,17 @@ class ScenarioList extends React.Component {
   }`;
 
   query(shardID, startDate, endDate) {
-    return `{
-      shardprogression(shard: ${shardID}) {
+    // TODO: put this back
+    // shardprogression (shard: ${shardID}) {
+      // teamOutcomes { participants { characterType }}
+      return `{
+      shardprogression {
         scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}") {
           scenarioInstanceID
           startTime
           endTime
           resolution
+          shardID
           scenarioDef {
             displayName
             displayDescription
@@ -105,7 +109,6 @@ class ScenarioList extends React.Component {
             participants {
               displayName
               score
-              characterType
             }
           }
         }
