@@ -87,11 +87,8 @@ class ScenarioList extends React.Component {
   }`;
 
   query(shardID, startDate, endDate) {
-    // TODO: put this back
-    // shardprogression (shard: ${shardID}) {
-      // teamOutcomes { participants { characterType }}
       return `{
-      shardprogression {
+      shardprogression (shard: ${shardID}) {
         scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}") {
           scenarioInstanceID
           startTime
@@ -109,6 +106,7 @@ class ScenarioList extends React.Component {
             participants {
               displayName
               score
+              characterType
             }
           }
         }
@@ -118,12 +116,12 @@ class ScenarioList extends React.Component {
 
   fetchTimer = {};
   fetchScenarios() {
-    const { shardID, apiHost, filterType, filterValue } = this.state;
-    if ( !shardID || !apiHost ) return;
+    const { shardID, filterType, filterValue } = this.state;
+    if ( !shardID ) return;
     const startDate = moment().subtract(filterValue, filterType).format();
     const endDate = moment().format();
 
-    gql(this.query(shardID, startDate, endDate), undefined, apiHost)
+    gql(this.query(shardID, startDate, endDate))
     .then((data) => {
       const { scenarioSummaries } = data.shardprogression;
 
@@ -170,14 +168,6 @@ class ScenarioList extends React.Component {
       const { servers } = data.connectedServices;
       for (let i = 0; i < servers.length; i++) {
         if (servers[i].name === this.props.match.params.serverName) {
-          // if (servers[i].status === 'Offline') {
-          //   this.setState({
-          //     error: `API Server (${servers[i].apiHost}) is offline.`,
-          //     loading: false
-          //   });
-          //   return;
-          // }
-
           this.setState({
             error: null,
             shardID: servers[i].shardID,
