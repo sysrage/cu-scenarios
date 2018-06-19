@@ -103,19 +103,34 @@ const getVictor = (outcomes) => {
 }
 
 const getRounds = (rounds) => {
-  if (rounds && rounds.length > 1) {
+  if (rounds && rounds.length > 0) {
 
     const roundRows = [];
     rounds.forEach((round, rid) => {
       const roundLength = moment.duration(moment(round.endTime).diff(moment(round.startTime))).as('minutes');
       let roundPlayers = 0;
-      round.teamOutcomes.forEach((team) => roundPlayers += team.participantCount);
+      let roundNPCs = 0;
+      round.teamOutcomes.forEach((team) => {
+        team.participants.forEach((participant) => {
+          switch (participant.characterType) {
+            case 'NonPlayerCharacter':
+              roundNPCs++;
+              break;
+            case 'PlayerCharacter':
+              roundPlayers++;
+              break;
+            default:
+              roundPlayers++;
+              break;
+          }
+        });
+      });
 
       roundRows.push(
         <tr key={round.roundInstanceID}>
           <RoundTableBodyItem>{rid + 1}</RoundTableBodyItem>
           <RoundTableBodyItem>{roundLength.toFixed()} min</RoundTableBodyItem>
-          <RoundTableBodyItem>{roundPlayers}</RoundTableBodyItem>
+          <RoundTableBodyItem>{roundPlayers} / {roundNPCs}</RoundTableBodyItem>
           <RoundTableBodyItem>{getVictor(round.teamOutcomes)}</RoundTableBodyItem>
         </tr>
       );
@@ -130,7 +145,7 @@ const getRounds = (rounds) => {
               <tr>
                 <RoundTableHeadItem>Round</RoundTableHeadItem>
                 <RoundTableHeadItem>Duration</RoundTableHeadItem>
-                <RoundTableHeadItem>Players</RoundTableHeadItem>
+                <RoundTableHeadItem>Players / NPCs</RoundTableHeadItem>
                 <RoundTableHeadItem>Victor</RoundTableHeadItem>
               </tr>
             </RoundTableHead>
@@ -152,14 +167,14 @@ const getAllParticipants = (outcomes) => {
     outcomes.forEach((team) => {
       team.participants.forEach((participant) => {
         allParticipants.push({
-          id: pid,
+          id: pid++,
           displayName: participant.displayName,
+          characterType: participant.characterType,
           score: participant.score,
           damage: participant.damage,
           team: team.teamID,
           outcome: team.outcome
         });
-        pid++;
       });
     });
   }
@@ -204,6 +219,7 @@ class ScenarioDetail extends React.Component {
           participants {
             displayName
             score
+            characterType
             damage {
               healingApplied {
                 anyCharacter
@@ -295,34 +311,92 @@ class ScenarioDetail extends React.Component {
           resolution
           teamOutcomes {
             teamID
-            score
-            role
             outcome
-            participantCount
             participants {
               displayName
               score
-            }
-            damageSummary {
-              killCount {
-                self
-                playerCharacter
-                nonPlayerCharacter
-                dummy
-                anyCharacter
-                resourceNode
-                item
-                building
-              }
-              deathCount {
-                self
-                playerCharacter
-                nonPlayerCharacter
-                dummy
-                anyCharacter
-                resourceNode
-                item
-                building
+              characterType
+              damage {
+                healingApplied {
+                  anyCharacter
+                  self
+                  playerCharacter
+                  nonPlayerCharacter
+                  dummy
+                  resourceNode
+                  item
+                  building
+                }
+                healingReceived {
+                  anyCharacter
+                  self
+                  playerCharacter
+                  nonPlayerCharacter
+                  dummy
+                  resourceNode
+                  item
+                  building
+                }
+                damageApplied {
+                  anyCharacter
+                  self
+                  playerCharacter
+                  nonPlayerCharacter
+                  dummy
+                  resourceNode
+                  item
+                  building
+                }
+                damageReceived {
+                  anyCharacter
+                  self
+                  playerCharacter
+                  nonPlayerCharacter
+                  dummy
+                  resourceNode
+                  item
+                  building
+                }
+                killCount {
+                  anyCharacter
+                  self
+                  playerCharacter
+                  nonPlayerCharacter
+                  dummy
+                  resourceNode
+                  item
+                  building
+                }
+                deathCount {
+                  anyCharacter
+                  self
+                  playerCharacter
+                  nonPlayerCharacter
+                  dummy
+                  resourceNode
+                  item
+                  building
+                }
+                killAssistCount {
+                  anyCharacter
+                  self
+                  playerCharacter
+                  nonPlayerCharacter
+                  dummy
+                  resourceNode
+                  item
+                  building
+                }
+                createCount {
+                  anyCharacter
+                  self
+                  playerCharacter
+                  nonPlayerCharacter
+                  dummy
+                  resourceNode
+                  item
+                  building
+                }
               }
             }
           }
@@ -378,7 +452,16 @@ class ScenarioDetail extends React.Component {
   render() {
     const { loading, error, scenariosummary } = this.state;
     const { history } = this.props;
-    const allParticipants = getAllParticipants(scenariosummary.teamOutcomes);
+    let allParticipants = [];
+    if (scenariosummary.resolution === 'Started') {
+      let roundOutcomes = [];
+      scenariosummary.rounds.forEach((round) => {
+        roundOutcomes.push.apply(roundOutcomes, round.teamOutcomes);
+      });
+      allParticipants = getAllParticipants(roundOutcomes);
+    } else {
+      allParticipants = getAllParticipants(scenariosummary.teamOutcomes);
+    }
     const startMoment = moment(scenariosummary.startTime);
     const endMoment = moment(scenariosummary.endTime);
 

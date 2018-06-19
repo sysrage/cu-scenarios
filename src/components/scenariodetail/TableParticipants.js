@@ -90,7 +90,10 @@ class TableParticipants extends React.Component {
     const participantRows = [
       <tr onClick={ clickCallback } key={ "row-data-" + participant.displayName + participant.id }>
         <ScenarioTableBodyItem>
-          { participant.displayName }
+          { participant.displayName } ({
+            participant.characterType === 'NonPlayerCharacter' ? 'NPC' :
+            participant.characterType === 'PlayerCharacter' ? 'Player' :
+            participant.characterType })
         </ScenarioTableBodyItem>
         <ScenarioTableBodyItem>
           { participant.damage.killCount.anyCharacter } / { participant.damage.deathCount.anyCharacter }
