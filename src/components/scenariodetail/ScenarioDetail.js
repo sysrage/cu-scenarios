@@ -435,14 +435,17 @@ class ScenarioDetail extends React.Component {
 
   }
 
-  componentWillMount() {
-
+  componentDidUpdate() {
+    if (this.state.scenariosummary && this.state.scenariosummary.resolution === 'Started') {
+      if (typeof this.fetchTimer === 'object') {
+        this.fetchTimer = setInterval(() => {this.fetchScenario()}, 5000);
+      }
+    }
   }
 
   componentDidMount() {
     this.setState({ loading: true });
     this.fetchScenario();
-    // this.fetchTimer = setInterval(() => {this.fetchScenario()}, 2000);
   }
 
   componentWillUnmount() {
