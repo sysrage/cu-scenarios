@@ -6,7 +6,7 @@
  * @param {string} variables
  * @param {number} server
  */
-export const gql = (query, variables, server = 'https://hatcheryapi.camelotunchained.com') => {
+export const gql = (query, variables, server = 'https://api.camelotunchained.com') => {
   const url = `${server}/graphql`;
   const headers = {
       'api-version': '1.0',
