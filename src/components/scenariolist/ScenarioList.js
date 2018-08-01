@@ -89,24 +89,26 @@ class ScenarioList extends React.Component {
   query(shardID, startDate, endDate) {
       return `{
       shardprogression (shard: ${shardID}) {
-        scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}") {
-          scenarioInstanceID
-          startTime
-          endTime
-          resolution
-          shardID
-          scenarioDef {
-            displayName
-            displayDescription
-            icon
-          }
-          teamOutcomes {
-            teamID
-            outcome
-            participants {
+        scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}", limit: 30) {
+          data {
+            scenarioInstanceID
+            startTime
+            endTime
+            resolution
+            shardID
+            scenarioDef {
               displayName
-              score
-              characterType
+              displayDescription
+              icon
+            }
+            teamOutcomes {
+              teamID
+              outcome
+              participants {
+                displayName
+                score
+                characterType
+              }
             }
           }
         }
@@ -123,7 +125,7 @@ class ScenarioList extends React.Component {
 
     gql(this.query(shardID, startDate, endDate))
     .then((data) => {
-      const { scenarioSummaries } = data.shardprogression;
+      const scenarioSummaries = data.shardprogression.scenarioSummaries.data;
 
       const finishedScenarios = [];
       const otherScenarios = [];

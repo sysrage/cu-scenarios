@@ -455,6 +455,7 @@ class ScenarioDetail extends React.Component {
   render() {
     const { loading, error, scenariosummary } = this.state;
     const { history } = this.props;
+    console.log('scenariosummary', scenariosummary);
     let allParticipants = [];
     if (scenariosummary.resolution === 'Started') {
       let roundOutcomes = [];
