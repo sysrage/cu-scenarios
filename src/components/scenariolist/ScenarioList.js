@@ -89,7 +89,7 @@ class ScenarioList extends React.Component {
   query(shardID, startDate, endDate) {
       return `{
       shardprogression (shard: ${shardID}) {
-        scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}", limit: 30) {
+        scenarioSummaries(startDate: "${startDate}", endDate: "${endDate}", skip: 0, limit: 20) {
           data {
             scenarioInstanceID
             startTime
