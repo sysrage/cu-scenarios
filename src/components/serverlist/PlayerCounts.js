@@ -20,11 +20,11 @@ class PlayerCounts extends React.Component {
     };
   }
 
-  query(server) {
+  query(server, shard) {
     return `
       {
         metrics {
-          currentPlayerCount(server: "${server}") {
+          currentPlayerCount(shard: ${shard}, server: "${server}") {
             arthurian
             tuatha
             viking
@@ -37,8 +37,7 @@ class PlayerCounts extends React.Component {
   fetchTimer = {};
   fetchPlayers() {
     const { server } = this.props;
-
-    gql(this.query(server))
+    gql(this.query(server.name, server.shardID), undefined, server.apiHost)
     .then((data) => {
       const { arthurian, tuatha, viking  } = data.metrics.currentPlayerCount;
 
@@ -63,8 +62,10 @@ class PlayerCounts extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchPlayers();
-    this.fetchTimer = setInterval(() => {this.fetchPlayers()}, 3000);
+    if (this.props.server.status === "Online") {
+      this.fetchPlayers();
+      this.fetchTimer = setInterval(() => { this.fetchPlayers() }, 3000);
+    }
   }
 
   componentWillUnmount() {
@@ -83,7 +84,7 @@ class PlayerCounts extends React.Component {
 }
 
 PlayerCounts.propTypes = {
-  server: PropTypes.string.isRequired,
+  server: PropTypes.object.isRequired,
 };
 
 export default PlayerCounts;

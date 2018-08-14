@@ -49,7 +49,7 @@ const ServerTable = (props) => {
                 {server.accessLevel}
               </td>
               <td>
-                <PlayerCounts server={server.name} />
+                <PlayerCounts server={server} />
               </td>
             </tr>
           ))}
