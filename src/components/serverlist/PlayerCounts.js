@@ -34,7 +34,7 @@ class PlayerCounts extends React.Component {
     `
   }
 
-  fetchTimer = {};
+  fetchTimer = null;
   fetchPlayers() {
     const { server } = this.props;
     gql(this.query(server.name, server.shardID), undefined, server.apiHost)
@@ -57,19 +57,20 @@ class PlayerCounts extends React.Component {
 
   }
 
-  componentWillMount() {
-
-  }
-
-  componentDidMount() {
-    if (this.props.server.status === "Online") {
+  componentDidUpdate() {
+    if (this.props.server.status === "Online" && !this.fetchTimer) {
       this.fetchPlayers();
       this.fetchTimer = setInterval(() => { this.fetchPlayers() }, 3000);
+    }
+    if (this.props.server.status !== "Online" && this.fetchTimer) {
+      clearInterval(this.fetchTimer);
+      this.fetchTimer = null;
     }
   }
 
   componentWillUnmount() {
     clearInterval(this.fetchTimer);
+    this.fetchTimer = null;
   }
 
   render() {
